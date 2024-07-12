@@ -1,0 +1,23 @@
+module.exports = {
+	root: true,
+	env: { browser: true, es2020: true },
+	extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react-hooks/recommended"],
+	ignorePatterns: ["dist", ".eslintrc.cjs"],
+	parser: "@typescript-eslint/parser",
+	plugins: ["react-refresh"],
+	rules: {
+		"no-alert": "error",
+		"no-console": "error",
+		"react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+		"@typescript-eslint/no-use-before-define": ["error", { functions: false }],
+		"@typescript-eslint/consistent-type-imports": "warn",
+		"@typescript-eslint/ban-ts-comment": "error",
+		"@typescript-eslint/explicit-function-return-type": "error",
+		"react/react-in-jsx-scope": "off",
+		"no-plusplus": ["error", { allowForLoopAfterthoughts: true }],
+		"no-param-reassign": ["error", { props: true, ignorePropertyModificationsFor: ["state"] }],
+		"@typescript-eslint/lines-between-class-members": "error",
+		"no-underscore-dangle": "error",
+		"@typescript-eslint/no-inferrable-types": "error",
+	},
+};
