@@ -1,4 +1,4 @@
-import styled from '@emotion/styled'
+import styled from "styled-components";
 
 type OuterFrameProps = {
 	$isExpand: boolean;
@@ -7,17 +7,16 @@ type OuterFrameProps = {
 const OuterFrame = styled.div<OuterFrameProps>`
 	width: ${(props): string => (props.$isExpand ? "800px" : "400px")};
 	border: 1px solid red;
-	transition: width 0.5s;
 	padding: 16px;
 `;
 
 const InnerContainer = styled.div`
-	display: flex;
 	width: 100%;
+	display: flex;
 	gap: 8px;
 	& p {
 		flex-grow: 1;
-		margin: 5px 5px 4px 5px;
+		margin: 5px;
 		overflow-wrap: anywhere;
 	}
 `;
@@ -30,9 +29,20 @@ const ButtonContainer = styled.div`
 	flex-shrink: 0;
 `;
 
+const TextArea = styled.textarea`
+	flex-grow: 1;
+	box-sizing: border-box;
+	overflow: hidden;
+	resize: none;
+	display: inline-block;
+	align-self: baseline;
+	padding: 5px;
+`;
+
 const Button = styled.button`
-	padding: 12px 16px;
+	padding: 0 16px;
+	height: 45px;
 	margin: 0;
 `;
 
-export { OuterFrame, InnerContainer, Button, ButtonContainer };
+export { OuterFrame, InnerContainer, Button, TextArea, ButtonContainer };

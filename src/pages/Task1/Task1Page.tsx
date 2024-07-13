@@ -1,7 +1,63 @@
-import type { ChangeEvent } from "react";
-import { useCallback, useState } from "react";
-import { Button, ButtonContainer, InnerContainer, OuterFrame } from "~/pages/Task1/styles/page";
-import { TextareaAutosize } from "@mui/base/TextareaAutosize";
+import type { ChangeEvent, ForwardedRef } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { Button, ButtonContainer, InnerContainer, OuterFrame, TextArea } from "~/pages/Task1/styles/page";
+
+type AutoSizeTextareaHandle = {
+	resizeTextArea: () => void;
+};
+
+type AutoSizeTextareaProps = {
+	value: string;
+	onChange?: (text: string) => void;
+};
+
+/** auto resize textarea component */
+const AutoSizeTextarea = forwardRef(({ value, onChange }: AutoSizeTextareaProps, ref: ForwardedRef<AutoSizeTextareaHandle>): JSX.Element => {
+	// refs
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	// methods
+	const handleChange = useCallback(
+		(event: ChangeEvent<HTMLTextAreaElement>): void => {
+			if (onChange) onChange(event.target.value);
+		},
+		[onChange]
+	);
+
+	const resizeTextArea = useCallback(() => {
+		if (textareaRef.current) {
+			// Reset the height to auto to shrink if content is removed
+			textareaRef.current.style.height = "auto";
+			// Set the height based on the scrollHeight to fit the content
+			textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+		}
+	}, []);
+
+	// effects
+	useEffect(() => {
+		resizeTextArea();
+	}, [value, resizeTextArea]);
+
+	// handle
+	useImperativeHandle(
+		ref,
+		() => ({
+			resizeTextArea,
+		}),
+		[resizeTextArea]
+	);
+
+	return (
+		<TextArea
+			ref={textareaRef}
+			value={value}
+			onChange={(e) => {
+				handleChange(e);
+			}}
+			placeholder="Type in here now..."
+		/>
+	);
+});
 
 /**
  * Task 1: Coding assignment 1
@@ -10,10 +66,12 @@ import { TextareaAutosize } from "@mui/base/TextareaAutosize";
  * -   Text field: Non-editable as normal, just like `<p></p>` or any block element, and can be edited after clicking button 1.
  * -   Button 1: With the text "edit", when the user clicks it, text field will toggle between non-editable and editable modes.
  * -   Button 2: With the text "resize", when the user clicks it, outer frame will toggle between 400px and 800px.
- * Expect: The buttons' size should be fixed, and the text field should automatically resize when the outer frame or inner text changes.
+ * -   Expect: The buttons' size should be fixed, and the text field should automatically resize when the outer frame or inner text changes.
  * @returns
  */
 function Task1Page(): JSX.Element {
+	// refs
+	const textareaRef = useRef<AutoSizeTextareaHandle | null>(null);
 	// states
 	const [isEditable, setIsEditable] = useState<boolean>(true);
 	const [isExpand, setIsExpand] = useState<boolean>(false);
@@ -29,25 +87,19 @@ function Task1Page(): JSX.Element {
 		setIsExpand((prev) => !prev);
 	}, []);
 
-	// Input on change
-	const handleChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>): void => {
-		setText(event.target.value);
-	}, []);
+	useEffect(() => {
+		textareaRef.current?.resizeTextArea();
+	}, [isExpand]);
 
 	return (
 		<OuterFrame $isExpand={isExpand}>
 			<InnerContainer>
 				{isEditable ? (
-					<TextareaAutosize
-						placeholder="Type your text..."
+					<AutoSizeTextarea
 						value={text}
-						onChange={(e) => {
-							handleChange(e);
-						}}
-						style={{
-							flexGrow: 1,
-							padding: 4,
-							minHeight: 36.39,
+						ref={textareaRef}
+						onChange={(content) => {
+							setText(content);
 						}}
 					/>
 				) : (
